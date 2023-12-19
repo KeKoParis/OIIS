@@ -1,5 +1,7 @@
 import numpy as np
 from PIL import Image
+from matplotlib import pyplot as plt
+
 
 def median_filter(image, filter_size):
     width, height = image.shape
@@ -10,7 +12,7 @@ def median_filter(image, filter_size):
 
     for i in range(width):
         for j in range(height):
-            neighbors = padded_image[i:i+filter_size, j:j+filter_size]
+            neighbors = padded_image[i:i + filter_size, j:j + filter_size]
             median = np.median(neighbors)
             filtered_image[i, j] = median
 
@@ -39,14 +41,23 @@ def edge_detection(image):
 
     for i in range(width):
         for j in range(height):
-            neighbors = padded_image[i:i+3, j:j+3]
+            neighbors = padded_image[i:i + 3, j:j + 3]
             gradient_x[i, j] = np.sum(neighbors * sobel_x)
             gradient_y[i, j] = np.sum(neighbors * sobel_y)
 
-    gradient_magnitude = np.sqrt(gradient_x**2 + gradient_y**2)
+    gradient_magnitude = np.sqrt(gradient_x ** 2 + gradient_y ** 2)
     gradient_magnitude *= 255.0 / np.max(gradient_magnitude)
 
     return gradient_magnitude.astype(np.uint8)
+
+
+def create_histogram(image):
+    histogram = np.bincount(image.flatten(), minlength=256)
+    plt.bar(range(256), histogram, color='gray')
+    plt.xlabel('Pixel Value')
+    plt.ylabel('Frequency')
+    plt.title('Image Histogram')
+    plt.show()
 
 
 # Пример использования функций
@@ -58,6 +69,7 @@ filtered_image = median_filter(image, filter_size=3)
 
 # Гистограммное выравнивание
 equalized_image = histogram_equalization(filtered_image)
+create_histogram(filtered_image)
 
 # Выделение границ
 edge_image = edge_detection(equalized_image)
